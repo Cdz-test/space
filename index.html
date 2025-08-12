@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0b1020">
+<title>Cosmosium — Le Système Solaire en 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+<script>
+  tailwind = { config: {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Poppins','system-ui','Segoe UI','Roboto','Helvetica Neue','Arial','Noto Sans','Apple Color Emoji','Noto Color Emoji','sans-serif'],
+          display: ['Space Grotesk','Poppins','system-ui','sans-serif']
+        },
+        colors: {
+          night: { 900:'#0b1020', 850:'#0d1427', 800:'#0f1830', 700:'#111e3d' },
+          neon: { cyan:'#00ffd1', pink:'#ff4ecd', purple:'#9d7bff', blue:'#4cc9f0', lime:'#b3ff00' },
+          aurora: { a:'#1b1f3a', b:'#141a31', c:'#0f1629' },
+          brand: '#7c3aed'
+        },
+        boxShadow: {
+          neon: '0 0 0 1px rgba(147,51,234,.25), 0 10px 30px rgba(124,58,237,.35)',
+          glow: 'inset 0 0 40px rgba(99,102,241,.25), 0 20px 60px rgba(2,8,23,.6)'
+        },
+        keyframes: {
+          twinkle: { '0%,100%':{opacity:.65}, '50%':{opacity:1} },
+          float: { '0%':{transform:'translateY(0px)'}, '50%':{transform:'translateY(-12px)'}, '100%':{transform:'translateY(0px)'} },
+          'gradient-x': { '0%,100%':{'background-position':'0% 50%'}, '50%':{'background-position':'100% 50%'} },
+          'marquee': { '0%':{transform:'translateX(0)'}, '100%':{transform:'translateX(-50%)'} },
+          'pulse-soft': { '0%':{boxShadow:'0 0 0 0 rgba(124,58,237,.35)'}, '70%':{boxShadow:'0 0 0 20px rgba(124,58,237,0)'}, '100%':{boxShadow:'0 0 0 0 rgba(124,58,237,0)'} }
+        },
+        animation: {
+          twinkle: 'twinkle 2.4s ease-in-out infinite',
+          float: 'float 7s ease-in-out infinite',
+          'gradient-x': 'gradient-x 10s ease infinite',
+          marquee: 'marquee 40s linear infinite',
+          'pulse-soft': 'pulse-soft 2.5s ease-out infinite'
+        }
+      }
+    }
+  } }
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{
+    --bg-grad: radial-gradient(1200px 800px at 10% -10%, rgba(124,58,237,.15), transparent 60%),
+               radial-gradient(1000px 600px at 90% 10%, rgba(76,201,240,.12), transparent 60%),
+               radial-gradient(900px 700px at 50% 120%, rgba(0,255,209,.10), transparent 60%);
+    --glass: rgba(255,255,255,.06);
+    --glass-2: rgba(255,255,255,.08);
+  }
+  html, body { height: 100%; }
+  body{ background: #0b1020; }
+  .cosmic {
+    background:
+      radial-gradient(800px 500px at 80% 0%, rgba(124,58,237,.20), transparent 60%),
+      radial-gradient(600px 600px at 10% 10%, rgba(0,255,209,.15), transparent 60%),
+      radial-gradient(700px 500px at 50% 100%, rgba(76,201,240,.12), transparent 60%),
+      linear-gradient(180deg, #0b1020 0%, #0d1427 60%, #0b1020 100%);
+  }
+  .stars, .stars:before, .stars:after{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.8) 40%, transparent 45%),
+      radial-gradient(1.5px 1.5px at 60% 70%, rgba(255,255,255,.7) 40%, transparent 45%),
+      radial-gradient(1.8px 1.8px at 80% 40%, rgba(255,255,255,.75) 40%, transparent 45%),
+      radial-gradient(1.2px 1.2px at 30% 60%, rgba(255,255,255,.65) 40%, transparent 45%),
+      radial-gradient(1px 1px at 90% 20%, rgba(255,255,255,.6) 40%, transparent 45%),
+      radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,.6) 40%, transparent 45%);
+    background-repeat: repeat;
+    background-size: 600px 600px;
+    opacity:.5;
+    animation: twinkle 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  .stars:before{
+    background-size: 800px 800px;
+    opacity:.45;
+    animation-duration: 7s;
+    transform: translate3d(0,0,0);
+  }
+  .stars:after{
+    background-size: 1000px 1000px;
+    opacity:.40;
+    animation-duration: 8.5s;
+  }
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.12);
+  }
+  .btn {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::after{
+    content:"";
+    position:absolute; inset:-1px;
+    background: linear-gradient(90deg, rgba(124,58,237,.6), rgba(76,201,240,.6), rgba(0,255,209,.6));
+    transform: translateX(-100%);
+    transition: transform .6s ease;
+    opacity:.15;
+  }
+  .btn:hover::after{ transform: translateX(0%); }
+  .tilt {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .tilt:hover{ transform: perspective(800px) rotateX(8deg) rotateY(-8deg) translateZ(5px); }
+  .reveal { opacity:0; transform: translateY(24px) scale(.98); transition: all .8s cubic-bezier(.2,.65,.2,1); }
+  .reveal.is-visible { opacity:1; transform: translateY(0) scale(1); }
+  .scrollbar::-webkit-scrollbar{ height:8px; width:8px; }
+  .scrollbar::-webkit-scrollbar-thumb{ background: linear-gradient(90deg, #7c3aed, #4cc9f0); border-radius:999px; }
+  .grad-text { background: linear-gradient(90deg, #a78bfa, #4cc9f0 40%, #00ffd1 80%); -webkit-background-clip:text; background-clip:text; color: transparent; }
+  .badge-gradient { background: linear-gradient(135deg, rgba(124,58,237,.25), rgba(76,201,240,.25)); border:1px solid rgba(255,255,255,.15); }
+  .ring-gradient { box-shadow: 0 0 0 2px rgba(124,58,237,.2), inset 0 0 40px rgba(76,201,240,.25); }
+  .orbit-dashed{ background-image: radial-gradient(circle at center, transparent 0, transparent calc(50% - 1px), rgba(255,255,255,.2) calc(50% - 1px), rgba(255,255,255,.2) 50%, transparent calc(50% + 1px)); }
+  @media (prefers-reduced-motion: reduce){
+    .tilt, .reveal, .btn::after, .stars, .stars:before, .stars:after, .animate, [class*="animate-"]{ animation: none !important; transition: none !important; }
+  }
+</style>
+    <meta name="description" content="Découvrez le système solaire d’un nouvel œil !">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body class="dark bg-night-900 text-slate-100 font-sans antialiased selection:bg-brand/40 selection:text-white">
+<div id="scrollProgress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-fuchsia-500 via-indigo-500 to-cyan-400 z-[9999] w-0"></div>
+
+<header aria-label="Barre de navigation" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[min(1200px,95%)]">
+  <div class="glass rounded-2xl px-5 py-3 shadow-neon flex items-center justify-between gap-3">
+    <a href="#hero" class="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-brand/60 rounded-xl px-2 py-1">
+      <span class="relative grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand/60 to-neon.blue/50 text-white shadow-neon">
+        <i class="fa fa-sun text-yellow-300"></i>
+        <span class="absolute -inset-1 rounded-xl blur-xl bg-brand/30 -z-10"></span>
+      </span>
+      <div>
+        <strong class="font-display text-lg tracking-tight">Cosmosium</strong>
+        <div class="text-xs text-slate-300 -mt-0.5">Le Système Solaire en 3D</div>
+      </div>
+    </a>
+    <nav class="hidden md:flex items-center gap-6 text-sm">
+      <a href="#viewer" class="hover:text-neon.cyan transition-colors">Scène 3D</a>
+      <a href="#planetes" class="hover:text-neon.cyan transition-colors">Planètes</a>
+      <a href="#comparateur" class="hover:text-neon.cyan transition-colors">Comparateur</a>
+      <a href="#galerie" class="hover:text-neon.cyan transition-colors">Galerie</a>
+      <a href="#quiz" class="hover:text-neon.cyan transition-colors">Quiz</a>
+      <a href="#faq" class="hover:text-neon.cyan transition-colors">FAQ</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <button id="themeToggle" class="btn badge-gradient rounded-xl px-3 py-2 text-sm backdrop-blur focus:outline-none focus:ring-2 focus:ring-brand/60" aria-label="Basculer le thème">
+        <i class="fa fa-moon mr-2"></i> Thème
+      </button>
+      <a href="#viewer" class="btn rounded-xl bg-gradient-to-r from-brand to-neon.blue text-white px-4 py-2 text-sm font-semibold shadow-neon focus:outline-none focus:ring-2 focus:ring-brand/60">
+        <i class="fa fa-rocket mr-2"></i> Explorer en 3D
+      </a>
+      <button id="openMenu" class="md:hidden btn badge-gradient rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-brand/60" aria-label="Ouvrir le menu"><i class="fa fa-bars"></i></button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden mt-2 glass rounded-2xl p-4">
+    <div class="grid gap-2 text-sm">
+      <a href="#viewer" class="px-3 py-2 rounded-lg hover:bg-white/5"><i class="fa fa-vr-cardboard w-5"></i> Scène 3D</a>
+      <a href="#planetes" class="px-3 py-2 rounded-lg hover:bg-white/5"><i class="fa fa-globe w-5"></i> Planètes</a>
+      <a href="#comparateur" class="px-3 py-2 rounded-lg hover:bg-white/5"><i class="fa fa-sliders-h w-5"></i> Comparateur</a>
+      <a href="#galerie" class="px-3 py-2 rounded-lg hover:bg-white/5"><i class="fa fa-images w-5"></i> Galerie</a>
+      <a href="#quiz" class="px-3 py-2 rounded-lg hover:bg-white/5"><i class="fa fa-question-circle w-5"></i> Quiz</a>
+      <a href="#faq" class="px-3 py-2 rounded-lg hover:bg-white/5"><i class="fa fa-comments w-5"></i> FAQ</a>
+    </div>
+  </div>
+</header>
+
+<section id="hero" class="relative pt-28 md:pt-32 pb-16 md:pb-28 cosmic overflow-hidden">
+  <div class="absolute inset-0 stars"></div>
+  <div class="absolute -left-20 -top-20 w-[500px] h-[500px] rounded-full blur-3xl opacity-25 bg-fuchsia-500"></div>
+  <div class="absolute -right-24 -bottom-24 w-[600px] h-[600px] rounded-full blur-3xl opacity-25 bg-cyan-400"></div>
+
+  <div class="relative z-10 w-[min(1200px,95%)] mx-auto">
+    <div class="grid lg:grid-cols-2 gap-10 items-center">
+      <div class="reveal">
+        <span class="inline-flex items-center gap-2 badge-gradient px-3 py-1 rounded-full text-xs uppercase tracking-wider">
+          <i class="fa fa-sparkles"></i>
+          Nouvelle expérience 2025
+        </span>
+        <h1 class="mt-5 font-display text-4xl md:text-6xl leading-tight font-extrabold">
+          <span class="grad-text animate-gradient-x">Le Système Solaire</span> comme vous ne l’avez jamais vu
+        </h1>
+        <p class="mt-4 text-slate-300 text-base md:text-lg">
+          Explorez une scène 3D interactive, orbitez autour des planètes texturées, apprenez des faits étonnants et comparez leurs tailles en un clin d’œil. Tout tient en une page, fluide et immersive.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a href="#viewer" class="btn rounded-xl bg-gradient-to-r from-fuchsia-500 via-brand to-neon.blue text-white px-6 py-3 font-semibold shadow-neon">
+            <i class="fa fa-rocket mr-2"></i> Entrer dans l’orbite
+          </a>
+          <a href="#planetes" class="btn rounded-xl px-6 py-3 font-semibold border border-white/15 hover:border-white/25 backdrop-blur">
+            <i class="fa fa-compass mr-2"></i> Découvrir les planètes
+          </a>
+        </div>
+        <div class="mt-8 grid grid-cols-3 gap-4">
+          <div class="glass rounded-xl p-4 text-center tilt">
+            <div class="text-2xl font-bold text-white">1</div>
+            <div class="text-xs text-slate-300">Étoile</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center tilt">
+            <div class="text-2xl font-bold text-white">8</div>
+            <div class="text-xs text-slate-300">Planètes</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center tilt">
+            <div class="text-2xl font-bold text-white">140+</div>
+            <div class="text-xs text-slate-300">Lunes</div>
+          </div>
+        </div>
+        <div class="mt-8 flex items-center gap-3 text-sm text-slate-300">
+          <i class="fa fa-universal-access"></i> Accessible • <i class="fa fa-mobile-alt ml-3"></i> Responsive • <i class="fa fa-bolt ml-3"></i> Animations fluides
+        </div>
+      </div>
+      <div class="relative">
+        <div class="absolute -inset-6 rounded-3xl bg-gradient-to-br from-white/10 to-white/0 blur-2xl"></div>
+        <div class="glass rounded-3xl p-4 md:p-6 shadow-glow relative z-10">
+          <div class="relative h-[320px] md:h-[420px] rounded-2xl overflow-hidden bg-night-800">
+            <div class="absolute inset-0 grid place-items-center">
+              <div class="relative">
+                <div class="absolute -inset-6 rounded-full blur-2xl bg-brand/30"></div>
+                <div class="w-44 h-44 md:w-60 md:h-60 rounded-full bg-gradient-to-br from-yellow-300 via-orange-400 to-rose-500 shadow-neon animate-pulse-soft"></div>
+              </div>
+            </div>
+            <div class="absolute inset-0 grid place-items-center">
+              <div class="relative">
+                <div class="w-28 h-28 md:w-36 md:h-36 rounded-full bg-gradient-to-br from-sky-400 to-blue-700 shadow-neon animate-float" style="animation-delay:.5s"></div>
+                <div class="absolute -right-8 md:-right-12 top-8 w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-amber-200 to-amber-500 shadow-neon animate-float" style="animation-delay:1.1s"></div>
+                <div class="absolute -left-12 bottom-8 w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-red-300 to-red-600 shadow-neon animate-float" style="animation-delay:.2s"></div>
+              </div>
+            </div>
+            <div class="absolute left-4 top-4 badge-gradient rounded-full px-3 py-1 text-xs">
+              Aperçu stylisé
+            </div>
+            <div class="absolute right-4 bottom-4">
+              <span class="text-xs text-slate-300">Faites défiler pour la vraie 3D</span>
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-slate-400">
+            L’aperçu ci-dessus est purement décoratif. La scène 3D interactive complète vous attend ci-dessous.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-16 overflow-hidden">
+      <div class="flex items-center gap-6 animate-marquee whitespace-nowrap will-change-transform">
+        <span class="text-slate-300 text-sm"><i class="fa fa-star text-yellow-300 mr-2"></i>Textures procédurales</span>
+        <span class="text-slate-300 text-sm"><i class="fa fa-mouse-pointer mr-2"></i>Cliquer une planète = Focus + Infos</span>
+        <span class="text-slate-300 text-sm"><i class="fa fa-sliders-h mr-2"></i>Vitesse orbitale réglable</span>
+        <span class="text-slate-300 text-sm"><i class="fa fa-camera mr-2"></i>Capture en un clic</span>
+        <span class="text-slate-300 text-sm"><i class="fa fa-universal-access mr-2"></i>Clavier &amp; lecteur d’écran</span>
+      </div>
+    </div>
+  </div>
+  <a href="#viewer" class="absolute left-1/2 -translate-x-1/2 bottom-6 text-slate-300 text-xs hover:text-white focus:outline-none">
+    <i class="fa fa-angles-down animate-bounce"></i>
+  </a>
+</section>
+
+<section id="viewer" class="relative py-16 md:py-24 overflow-hidden">
+  <div class="absolute inset-0" style="background: var(--bg-grad);"></div>
+  <div class="absolute inset-0 stars"></div>
+  <div class="relative w-[min(1300px,95%)] mx-auto">
+    <div class="reveal text-center">
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold">
+        Scène <span class="grad-text">3D Interactive</span>
+      </h2>
+      <p class="mt-3 text-slate-300 max-w-3xl mx-auto">
+        Utilisez la souris ou le tactile pour orbiter, zoomer et cliquer sur une planète. Les textures sont générées en temps réel, imitant les caractéristiques de chaque monde.
+      </p>
+    </div>
+
+    <div class="mt-8 grid lg:grid-cols-[1fr,360px] gap-6">
+      <div class="glass rounded-3xl p-3 md:p-4 shadow-neon relative">
+        <div id="threeContainer" class="relative h-[460px] md:h-[560px] rounded-2xl bg-gradient-to-b from-aurora.a to-aurora.c overflow-hidden" role="application" aria-label="Visualisation 3D du système solaire">
+          <div id="webglFallback" class="absolute inset-0 hidden items-center justify-center text-center p-6">
+            <div>
+              <i class="fa fa-triangle-exclamation text-2xl text-amber-400"></i>
+              <p class="mt-3">WebGL semble indisponible. Veuillez utiliser un navigateur moderne.</p>
+            </div>
+          </div>
+        </div>
+        <div class="absolute left-4 top-4 flex gap-2">
+          <button id="btnPause" class="btn badge-gradient px-3 py-2 rounded-lg text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-brand/60"><i class="fa fa-pause mr-2"></i><span>Pause</span></button>
+          <button id="btnReset" class="btn badge-gradient px-3 py-2 rounded-lg text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-brand/60"><i class="fa fa-rotate mr-2"></i>Réinitialiser</button>
+          <button id="btnShot" class="btn badge-gradient px-3 py-2 rounded-lg text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-brand/60"><i class="fa fa-camera mr-2"></i>Capture</button>
+        </div>
+        <div class="absolute right-4 top-4 glass px-3 py-2 rounded-xl text-xs flex items-center gap-2"><i class="fa fa-mouse"></i> Glisser = orbiter • Molette = zoom</div>
+        <div class="absolute left-4 bottom-4 glass px-3 py-2 rounded-xl text-xs flex items-center gap-2">
+          <i class="fa fa-gauge"></i>
+          Vitesse
+          <input id="speedRange" type="range" min="0" max="200" value="100" class="ml-2 w-36 accent-fuchsia-400">
+        </div>
+        <div class="absolute right-4 bottom-4 glass px-3 py-2 rounded-xl text-xs flex items-center gap-2">
+          <label for="focusSelect" class="sr-only">Choisir une planète</label>
+          <i class="fa fa-bullseye"></i>
+          <select id="focusSelect" class="bg-transparent outline-none">
+            <option value="">Focus...</option>
+            <option>Mercure</option><option>Vénus</option><option>Terre</option><option>Mars</option>
+            <option>Jupiter</option><option>Saturne</option><option>Uranus</option><option>Neptune</option>
+          </select>
+        </div>
+      </div>
+
+      <aside class="glass rounded-3xl p-4 md:p-6 shadow-glow">
+        <h3 class="font-display text-xl md:text-2xl font-bold">Panneau d’informations</h3>
+        <p class="text-slate-300 text-sm mt-1">Cliquez une planète dans la scène, ou choisissez-la dans la liste.</p>
+        <div id="planetPanel" class="mt-4">
+          <div class="border border-white/10 rounded-2xl p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-brand to-neon.blue ring-2 ring-white/20"></div>
+              <div>
+                <div class="text-sm text-slate-400">Sélection actuelle</div>
+                <div id="panelName" class="text-lg font-semibold">Aucune</div>
+              </div>
+            </div>
+            <div id="panelFacts" class="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-300">
+              <div class="badge-gradient rounded-xl p-3"><div class="text-slate-400 text-xs">Distance</div><div id="factDistance" class="font-semibold">—</div></div>
+              <div class="badge-gradient rounded-xl p-3"><div class="text-slate-400 text-xs">Diamètre</div><div id="factDiametre" class="font-semibold">—</div></div>
+              <div class="badge-gradient rounded-xl p-3"><div class="text-slate-400 text-xs">Durée du jour</div><div id="factJour" class="font-semibold">—</div></div>
+              <div class="badge-gradient rounded-xl p-3"><div class="text-slate-400 text-xs">Année</div><div id="factAnnee" class="font-semibold">—</div></div>
+              <div class="badge-gradient rounded-xl p-3 col-span-2"><div class="text-slate-400 text-xs">Satellites</div><div id="factLunes" class="font-semibold">—</div></div>
+            </div>
+            <p id="panelDesc" class="mt-4 text-sm text-slate-300">Survolez ou cliquez une planète pour voir sa fiche.</p>
+            <div class="mt-4 flex gap-2">
+              <button id="btnFocusSelected" class="btn px-3 py-2 rounded-xl bg-gradient-to-r from-brand to-neon.blue text-white text-sm"><i class="fa fa-bullseye mr-2"></i> Focus</button>
+              <button id="btnCenterSun" class="btn px-3 py-2 rounded-xl border border-white/15 text-sm"><i class="fa fa-sun mr-2 text-yellow-300"></i> Revenir au Soleil</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6">
+          <h4 class="font-semibold">Raccourcis</h4>
+          <ul class="mt-2 text-sm text-slate-300 space-y-1">
+            <li><i class="fa fa-keyboard mr-2"></i>Barre d’espace: Pause/lecture</li>
+            <li><i class="fa fa-keyboard mr-2"></i>R: Réinitialiser la caméra</li>
+            <li><i class="fa fa-keyboard mr-2"></i>S: Capture d’écran</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="planetes" class="relative py-16 md:py-24">
+  <div class="absolute inset-0 stars"></div>
+  <div class="relative w-[min(1200px,95%)] mx-auto">
+    <div class="reveal text-center">
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold">Les planètes en un coup d’œil</h2>
+      <p class="mt-3 text-slate-300 max-w-3xl mx-auto">Cartes détaillées, faits clés et accès direct au focus dans la scène 3D.</p>
+    </div>
+
+    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="glass rounded-2xl p-5 tilt reveal">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg">Mercure</h3>
+          <span class="text-xs badge-gradient px-2 py-1 rounded-full">Rocheuse</span>
+        </div>
+        <div class="mt-3 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 ring-2 ring-white/15"></div>
+          <p class="text-sm text-slate-300">La plus proche du Soleil, battue par les écarts de température extrêmes.</p>
+        </div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><i class="fa fa-ruler-horizontal w-4"></i> 4 879 km</li>
+          <li><i class="fa fa-arrows-alt-h w-4"></i> 57,9 M km</li>
+          <li><i class="fa fa-stopwatch w-4"></i> Jour 1407,6 h</li>
+        </ul>
+        <div class="mt-4 flex gap-2">
+          <button class="btn px-3 py-2 rounded-xl bg-white/5 text-sm focus:outline-none focus:ring-2 focus:ring-brand/60" onclick="window.solarFocus &amp;&amp; window.solarFocus('Mercure')"><i class="fa fa-bullseye mr-2"></i> Voir dans la scène</button>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5 tilt reveal">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg">Vénus</h3>
+          <span class="text-xs badge-gradient px-2 py-1 rounded-full">Rocheuse</span>
+        </div>
+        <div class="mt-3 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 ring-2 ring-white/15"></div>
+          <p class="text-sm text-slate-300">Monde couvert de nuages acides et d’un effet de serre écrasant.</p>
+        </div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><i class="fa fa-ruler-horizontal w-4"></i> 12 104 km</li>
+          <li><i class="fa fa-arrows-alt-h w-4"></i> 108,2 M km</li>
+          <li><i class="fa fa-stopwatch w-4"></i> Jour 5832 h (rétrograde)</li>
+        </ul>
+        <div class="mt-4 flex gap-2">
+          <button class="btn px-3 py-2 rounded-xl bg-white/5 text-sm" onclick="window.solarFocus &amp;&amp; window.solarFocus('Vénus')"><i class="fa fa-bullseye mr-2"></i> Voir dans la scène</button>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5 tilt reveal">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg">Terre</h3>
+          <span class="text-xs badge-gradient px-2 py-1 rounded-full">Rocheuse</span>
+        </div>
+        <div class="mt-3 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-emerald-500 ring-2 ring-white/15"></div>
+          <p class="text-sm text-slate-300">Notre oasis bleue, seule connue à abriter la vie.</p>
+        </div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><i class="fa fa-ruler-horizontal w-4"></i> 12 742 km</li>
+          <li><i class="fa fa-arrows-alt-h w-4"></i> 149,6 M km</li>
+          <li><i class="fa fa-stopwatch w-4"></i> Jour 24 h</li>
+        </ul>
+        <div class="mt-4 flex gap-2">
+          <button class="btn px-3 py-2 rounded-xl bg-white/5 text-sm" onclick="window.solarFocus &amp;&amp; window.solarFocus('Terre')"><i class="fa fa-bullseye mr-2"></i> Voir dans la scène</button>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5 tilt reveal">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg">Mars</h3>
+          <span class="text-xs badge-gradient px-2 py-1 rounded-full">Rocheuse</span>
+        </div>
+        <div class="mt-3 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-red-400 to-orange-700 ring-2 ring-white/15"></div>
+          <p class="text-sm text-slate-300">La planète rouge, foyer des plus grands volcans du système solaire.</p>
+        </div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><i class="fa fa-ruler-horizontal w-4"></i> 6 779 km</li>
+          <li><i class="fa fa-arrows-alt-h w-4"></i> 227,9 M km</li>
+          <li><i class="fa fa-stopwatch w-4"></i> Jour 24,6 h</li>
+        </ul>
+        <div class="mt-4 flex gap-2">
+          <button class="btn px-3 py-2 rounded-xl bg-white/5 text-sm" onclick="window.solarFocus &amp;&amp; window.solarFocus('Mars')"><i class="fa fa-bullseye mr-2"></i> Voir dans la scène</button>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5 tilt reveal">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg">Jupiter</h3>
+          <span class="text-xs badge-gradient px-2 py-1 rounded-full">Géante gazeuse</span>
+        </div>
+        <div class="mt-3 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-200 to-amber-800 ring-2 ring-white/15"></div>
+          <p class="text-sm text-slate-300">La plus massive, aux bandes nuageuses et à la Grande Tache rouge.</p>
+        </div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><i class="fa fa-ruler-horizontal w-4"></i> 139 820 km</li>
+          <li><i class="fa fa-arrows-alt-h w-4"></i> 778,5 M km</li>
+          <li><i class="fa fa-stopwatch w-4"></i> Jour 9,9 h</li>
+        </ul>
+        <div class="mt-4 flex gap-2">
+          <button class="btn px-3 py-2 rounded-xl bg-white/5 text-sm" onclick="window.solarFocus &amp;&amp; window.solarFocus('Jupiter')"><i class="fa fa-bullseye mr-2"></i> Voir dans la scène</button>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5 tilt reveal">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg">Saturne</h3>
+          <span class="text-xs badge-gradient px-2 py-1 rounded-full">Géante gazeuse</span>
+        </div>
+        <div class="mt-3 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-200 to-yellow-600 ring-2 ring-white/15"></div>
+          <p class="text-sm text-slate-300">Célèbre pour ses anneaux majestueux, visibles même aux petits télescopes.</p>
+        </div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><i class="fa fa-ruler-horizontal w-4"></i> 116 460 km</li>
+          <li><i class="fa fa-arrows-alt-h w-4"></i> 1,43 Md km</li>
+          <li><i class="fa fa-stopwatch w-4"></i> Jour 10,7 h</li>
+        </ul>
+        <div class="mt-4 flex gap-2">
+          <button class="btn px-3 py-2 rounded-xl bg-white/5 text-sm" onclick="window.solarFocus &amp;&amp; window.solarFocus('Saturne')"><i class="fa fa-bullseye mr-2"></i> Voir dans la scène</button>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5 tilt reveal">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg">Uranus</h3>
+          <span class="text-xs badge-gradient px-2 py-1 rounded-full">Géante de glace</span>
+        </div>
+        <div class="mt-3 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-teal-200 to-cyan-600 ring-2 ring-white/15"></div>
+          <p class="text-sm text-slate-300">Inclinaison extrême : elle roule presque sur son orbite.</p>
+        </div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><i class="fa fa-ruler-horizontal w-4"></i> 50 724 km</li>
+          <li><i class="fa fa-arrows-alt-h w-4"></i> 2,87 Md km</li>
+          <li><i class="fa fa-stopwatch w-4"></i> Jour 17,2 h</li>
+        </ul>
+        <div class="mt-4 flex gap-2">
+          <button class="btn px-3 py-2 rounded-xl bg-white/5 text-sm" onclick="window.solarFocus &amp;&amp; window.solarFocus('Uranus')"><i class="fa fa-bullseye mr-2"></i> Voir dans la scène</button>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5 tilt reveal">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg">Neptune</h3>
+          <span class="text-xs badge-gradient px-2 py-1 rounded-full">Géante de glace</span>
+        </div>
+        <div class="mt-3 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-indigo-700 ring-2 ring-white/15"></div>
+          <p class="text-sm text-slate-300">Vents les plus rapides du système solaire, jusqu’à 2 000 km/h.</p>
+        </div>
+        <ul class="mt-4 text-sm text-slate-300 space-y-1">
+          <li><i class="fa fa-ruler-horizontal w-4"></i> 49 244 km</li>
+          <li><i class="fa fa-arrows-alt-h w-4"></i> 4,50 Md km</li>
+          <li><i class="fa fa-stopwatch w-4"></i> Jour 16,1 h</li>
+        </ul>
+        <div class="mt-4 flex gap-2">
+          <button class="btn px-3 py-2 rounded-xl bg-white/5 text-sm" onclick="window.solarFocus &amp;&amp; window.solarFocus('Neptune')"><i class="fa fa-bullseye mr-2"></i> Voir dans la scène</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="comparateur" class="relative py-16 md:py-24">
+  <div class="absolute inset-0 stars"></div>
+  <div class="relative w-[min(1100px,95%)] mx-auto">
+    <div class="reveal text-center">
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold">Comparateur de tailles</h2>
+      <p class="mt-3 text-slate-300 max-w-2xl mx-auto">Redimensionnez visuellement les planètes pour appréhender leurs proportions. Glissez le curseur pour changer l’échelle.</p>
+    </div>
+
+    <div class="mt-8 glass rounded-3xl p-6 shadow-glow">
+      <div class="flex items-center gap-3 text-sm">
+        <i class="fa fa-magnifying-glass"></i>
+        Échelle
+        <input id="scaleRange" type="range" min="40" max="200" value="100" class="ml-2 w-64 accent-fuchsia-400">
+        <span id="scaleValue" class="text-slate-300">100%</span>
+      </div>
+      <div id="sizeArena" class="mt-6 flex flex-wrap gap-6 items-end">
+        <div class="text-center">
+          <div class="mx-auto rounded-full bg-gradient-to-br from-yellow-300 to-orange-500 ring-gradient" style="width:calc(24px * 10);height:calc(24px * 10)"></div>
+          <div class="text-xs mt-2 text-slate-300">Soleil (réduit)</div>
+        </div>
+        <div data-size="0.38" class="size-dot text-center">
+          <div class="mx-auto rounded-full bg-gradient-to-br from-slate-400 to-slate-600 ring-gradient" style="width:calc(24px * 0.38);height:calc(24px * 0.38)"></div>
+          <div class="text-xs mt-2 text-slate-300">Mercure</div>
+        </div>
+        <div data-size="0.95" class="size-dot text-center">
+          <div class="mx-auto rounded-full bg-gradient-to-br from-amber-300 to-amber-600 ring-gradient" style="width:calc(24px * 0.95);height:calc(24px * 0.95)"></div>
+          <div class="text-xs mt-2 text-slate-300">Vénus</div>
+        </div>
+        <div data-size="1.00" class="size-dot text-center">
+          <div class="mx-auto rounded-full bg-gradient-to-br from-blue-400 to-emerald-500 ring-gradient" style="width:calc(24px * 1.00);height:calc(24px * 1.00)"></div>
+          <div class="text-xs mt-2 text-slate-300">Terre</div>
+        </div>
+        <div data-size="0.53" class="size-dot text-center">
+          <div class="mx-auto rounded-full bg-gradient-to-br from-red-400 to-orange-700 ring-gradient" style="width:calc(24px * 0.53);height:calc(24px * 0.53)"></div>
+          <div class="text-xs mt-2 text-slate-300">Mars</div>
+        </div>
+        <div data-size="11.2" class="size-dot text-center">
+          <div class="mx-auto rounded-full bg-gradient-to-br from-amber-200 to-amber-800 ring-gradient" style="width:calc(24px * 11.2/6);height:calc(24px * 11.2/6)"></div>
+          <div class="text-xs mt-2 text-slate-300">Jupiter</div>
+        </div>
+        <div data-size="9.45" class="size-dot text-center">
+          <div class="mx-auto rounded-full bg-gradient-to-br from-yellow-200 to-yellow-600 ring-gradient" style="width:calc(24px * 9.45/6);height:calc(24px * 9.45/6)"></div>
+          <div class="text-xs mt-2 text-slate-300">Saturne</div>
+        </div>
+        <div data-size="4.01" class="size-dot text-center">
+          <div class="mx-auto rounded-full bg-gradient-to-br from-teal-200 to-cyan-600 ring-gradient" style="width:calc(24px * 4.01/6);height:calc(24px * 4.01/6)"></div>
+          <div class="text-xs mt-2 text-slate-300">Uranus</div>
+        </div>
+        <div data-size="3.88" class="size-dot text-center">
+          <div class="mx-auto rounded-full bg-gradient-to-br from-blue-400 to-indigo-700 ring-gradient" style="width:calc(24px * 3.88/6);height:calc(24px * 3.88/6)"></div>
+          <div class="text-xs mt-2 text-slate-300">Neptune</div>
+        </div>
+      </div>
+      <div class="mt-6 text-xs text-slate-400">Les tailles sont relatives à la Terre = 1. Échelle ajustable pour lisibilité.</div>
+    </div>
+  </div>
+</section>
+
+<section id="galerie" class="relative py-16 md:py-24">
+  <div class="absolute inset-0 stars"></div>
+  <div class="relative w-[min(1200px,95%)] mx-auto">
+    <div class="reveal text-center">
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold">Galerie inspirante</h2>
+      <p class="mt-3 text-slate-300 max-w-2xl mx-auto">Remplacez ces images par vos propres visuels. Placeholders inclus.</p>
+    </div>
+    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <a href="https://placehold.co/1200x800/png" class="group block tilt reveal">
+        <div class="overflow-hidden rounded-2xl">
+          <img src="https://placehold.co/800x540/png" alt="Illustration de l’espace" class="w-full h-auto group-hover:scale-105 transition-transform duration-500">
+        </div>
+        <div class="mt-2 text-sm text-slate-300">Nébuleuse stylisée</div>
+      </a>
+      <a href="https://placehold.co/1200x800/png" class="group block tilt reveal">
+        <div class="overflow-hidden rounded-2xl">
+          <img src="https://placehold.co/800x540/jpg" alt="Planète stylisée" class="w-full h-auto group-hover:scale-105 transition-transform duration-500">
+        </div>
+        <div class="mt-2 text-sm text-slate-300">Planète gazeuse</div>
+      </a>
+      <a href="https://placehold.co/1200x800/png" class="group block tilt reveal">
+        <div class="overflow-hidden rounded-2xl">
+          <img src="https://placehold.co/800x540/jpg" alt="Anneaux de planète" class="w-full h-auto group-hover:scale-105 transition-transform duration-500">
+        </div>
+        <div class="mt-2 text-sm text-slate-300">Anneaux majestueux</div>
+      </a>
+      <a href="https://placehold.co/1200x800/png" class="group block tilt reveal">
+        <div class="overflow-hidden rounded-2xl">
+          <img src="https://placehold.co/800x540/png" alt="Surface rocheuse" class="w-full h-auto group-hover:scale-105 transition-transform duration-500">
+        </div>
+        <div class="mt-2 text-sm text-slate-300">Surface rocheuse</div>
+      </a>
+      <a href="https://placehold.co/1200x800/png" class="group block tilt reveal">
+        <div class="overflow-hidden rounded-2xl">
+          <img src="https://placehold.co/800x540/jpg" alt="Océans bleus" class="w-full h-auto group-hover:scale-105 transition-transform duration-500">
+        </div>
+        <div class="mt-2 text-sm text-slate-300">Océans de la Terre</div>
+      </a>
+      <a href="https://placehold.co/1200x800/png" class="group block tilt reveal">
+        <div class="overflow-hidden rounded-2xl">
+          <img src="https://placehold.co/800x540/jpg" alt="Ciel étoilé" class="w-full h-auto group-hover:scale-105 transition-transform duration-500">
+        </div>
+        <div class="mt-2 text-sm text-slate-300">Ciel étoilé</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="quiz" class="relative py-16 md:py-24">
+  <div class="absolute inset-0 stars"></div>
+  <div class="relative w-[min(1000px,95%)] mx-auto">
+    <div class="reveal text-center">
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold">Mini Quiz</h2>
+      <p class="mt-3 text-slate-300 max-w-2xl mx-auto">Testez vos connaissances en quelques questions rapides.</p>
+    </div>
+    <div class="mt-10 glass rounded-3xl p-6 md:p-8 shadow-glow">
+      <div id="quizBox" class="grid gap-6">
+        <div class="question">
+          <div class="font-semibold">1) Quelle planète possède des anneaux spectaculaires visibles depuis la Terre ?</div>
+          <div class="mt-2 grid gap-2">
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q1" value="Jupiter" class="accent-brand"> Jupiter</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q1" value="Saturne" class="accent-brand"> Saturne</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q1" value="Vénus" class="accent-brand"> Vénus</label>
+          </div>
+        </div>
+        <div class="question">
+          <div class="font-semibold">2) Quelle est la troisième planète à partir du Soleil ?</div>
+          <div class="mt-2 grid gap-2">
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q2" value="Terre" class="accent-brand"> Terre</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q2" value="Mars" class="accent-brand"> Mars</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q2" value="Mercure" class="accent-brand"> Mercure</label>
+          </div>
+        </div>
+        <div class="question">
+          <div class="font-semibold">3) La planète la plus massive du système solaire est ?</div>
+          <div class="mt-2 grid gap-2">
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q3" value="Jupiter" class="accent-brand"> Jupiter</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q3" value="Saturne" class="accent-brand"> Saturne</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q3" value="Neptune" class="accent-brand"> Neptune</label>
+          </div>
+        </div>
+        <div class="question">
+          <div class="font-semibold">4) La planète rouge doit sa couleur à ?</div>
+          <div class="mt-2 grid gap-2">
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q4" value="Glace" class="accent-brand"> La glace</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q4" value="Fer oxydé" class="accent-brand"> Le fer oxydé</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q4" value="Soufre" class="accent-brand"> Le soufre</label>
+          </div>
+        </div>
+        <div class="question">
+          <div class="font-semibold">5) La Lune est le satellite de ?</div>
+          <div class="mt-2 grid gap-2">
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q5" value="Mars" class="accent-brand"> Mars</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q5" value="Terre" class="accent-brand"> Terre</label>
+            <label class="flex items-center gap-3 text-sm"><input type="radio" name="q5" value="Vénus" class="accent-brand"> Vénus</label>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 flex gap-3">
+        <button id="btnQuiz" class="btn bg-gradient-to-r from-brand to-neon.blue px-5 py-3 rounded-xl font-semibold">Valider</button>
+        <button id="btnQuizReset" class="btn px-4 py-3 rounded-xl border border-white/15">Réinitialiser</button>
+      </div>
+      <div id="quizResult" class="mt-4 text-lg font-semibold"></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="relative py-16 md:py-24">
+  <div class="absolute inset-0 stars"></div>
+  <div class="relative w-[min(900px,95%)] mx-auto">
+    <div class="reveal text-center">
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold">FAQ</h2>
+      <p class="mt-3 text-slate-300">Quelques questions fréquentes au sujet de cette démo.</p>
+    </div>
+    <div class="mt-8 grid gap-4">
+      <details class="glass rounded-2xl p-5">
+        <summary class="cursor-pointer font-semibold">Comment interagir avec la scène 3D ?</summary>
+        <div class="mt-2 text-slate-300 text-sm">Glissez pour orbiter, utilisez la molette pour zoomer, cliquez une planète pour la cibler. Clavier : espace (pause), R (reset), S (capture).</div>
+      </details>
+      <details class="glass rounded-2xl p-5">
+        <summary class="cursor-pointer font-semibold">Quelles textures sont utilisées ?</summary>
+        <div class="mt-2 text-slate-300 text-sm">Des textures procédurales générées côté client, inspirées des couleurs et motifs réels (bandes de Jupiter, anneaux de Saturne, etc.).</div>
+      </details>
+      <details class="glass rounded-2xl p-5">
+        <summary class="cursor-pointer font-semibold">Est-ce compatible mobile ?</summary>
+        <div class="mt-2 text-slate-300 text-sm">Oui. La mise en page est responsive et l’orbite tactile est supportée.</div>
+      </details>
+    </div>
+
+    <div class="mt-12 glass rounded-3xl p-6 md:p-8 text-center">
+      <h3 class="font-display text-2xl font-bold">Recevoir les nouveautés</h3>
+      <p class="text-slate-300 mt-2">Abonnez-vous pour être alerté des nouvelles fonctionnalités et ressources éducatives.</p>
+      <form class="mt-4 max-w-md mx-auto grid grid-cols-[1fr,auto] gap-2" onsubmit="event.preventDefault();document.getElementById('nlMsg').textContent='Merci, à bientôt parmi les étoiles ✨';">
+        <label for="email" class="sr-only">Email</label>
+        <input id="email" type="email" required="" placeholder="votre@email.com" class="px-4 py-3 rounded-xl bg-white/10 border border-white/15 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/60">
+        <button class="btn rounded-xl px-5 py-3 bg-gradient-to-r from-brand to-neon.blue font-semibold">S’abonner</button>
+      </form>
+      <div id="nlMsg" class="mt-3 text-sm text-emerald-400"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="relative pt-10 pb-14">
+  <div class="absolute inset-0 stars"></div>
+  <div class="relative w-[min(1100px,95%)] mx-auto">
+    <div class="glass rounded-3xl p-6 md:p-8">
+      <div class="grid md:grid-cols-4 gap-6">
+        <div>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-neon.blue grid place-items-center text-white"><i class="fa fa-sun"></i></div>
+            <div class="font-display font-bold text-xl">Cosmosium</div>
+          </div>
+          <p class="text-sm text-slate-300 mt-3">Expérience pédagogique et visuelle du système solaire en 3D.</p>
+          <div class="mt-3 flex gap-3 text-slate-300">
+            <a aria-label="Twitter" href="#" class="hover:text-white"><i class="fa-brands fa-x-twitter"></i></a>
+            <a aria-label="Instagram" href="#" class="hover:text-white"><i class="fa-brands fa-instagram"></i></a>
+            <a aria-label="Github" href="#" class="hover:text-white"><i class="fa-brands fa-github"></i></a>
+          </div>
+        </div>
+        <div>
+          <div class="font-semibold">Navigation</div>
+          <ul class="mt-3 text-sm text-slate-300 space-y-1">
+            <li><a href="#viewer" class="hover:text-white">Scène 3D</a></li>
+            <li><a href="#planetes" class="hover:text-white">Planètes</a></li>
+            <li><a href="#comparateur" class="hover:text-white">Comparateur</a></li>
+            <li><a href="#galerie" class="hover:text-white">Galerie</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="font-semibold">Ressources</div>
+          <ul class="mt-3 text-sm text-slate-300 space-y-1">
+            <li>Faits astronomiques simplifiés</li>
+            <li>Textures procédurales</li>
+            <li>Accessibilité ARIA</li>
+          </ul>
+        </div>
+        <div>
+          <div class="font-semibold">Crédits</div>
+          <p class="text-sm text-slate-300 mt-3">Réalisé avec HTML, Tailwind CSS et Three.js. Remplacez les images placeholders par vos médias.</p>
+        </div>
+      </div>
+      <div class="mt-6 pt-6 border-t border-white/10 text-xs text-slate-400 flex items-center justify-between">
+        <div>© 2025 Cosmosium. Tous droits réservés.</div>
+        <div class="flex items-center gap-3">
+          <a href="#" class="hover:text-white">Mentions</a>
+          <span>•</span>
+          <a href="#" class="hover:text-white">Confidentialité</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="toTop" class="fixed bottom-5 right-5 hidden md:inline-flex items-center gap-2 btn rounded-full px-4 py-3 bg-gradient-to-r from-brand to-neon.blue text-white shadow-neon focus:outline-none focus:ring-2 focus:ring-brand/60" aria-label="Remonter en haut"><i class="fa fa-arrow-up"></i></button>
+</footer>
+
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js?module';
+  
+const container = document.getElementById('threeContainer');
+const fallback = document.getElementById('webglFallback');
+
+let renderer, scene, camera, controls, animationId;
+let timeScale = 1.0;
+let paused = false;
+
+const planetRefs = new Map();
+const pickables = [];
+let currentTargetName = null;
+
+const infoDB = {
+  'Soleil': { distance: '—', diametre: '1 392 700 km', jour: '—', annee: '—', lunes: '—', desc: 'Notre étoile, source d’énergie et de lumière.' },
+  'Mercure': { distance: '57,9 M km', diametre: '4 879 km', jour: '1407,6 h', annee: '88 j', lunes: '0', desc: 'Petite planète rocheuse la plus proche du Soleil.' },
+  'Vénus': { distance: '108,2 M km', diametre: '12 104 km', jour: '5832 h (rétrograde)', annee: '224,7 j', lunes: '0', desc: 'Monde brûlant enveloppé d’épais nuages acides.' },
+  'Terre': { distance: '149,6 M km', diametre: '12 742 km', jour: '24 h', annee: '365,25 j', lunes: '1', desc: 'Planète bleue abritant la vie, notre foyer.' },
+  'Mars': { distance: '227,9 M km', diametre: '6 779 km', jour: '24,6 h', annee: '687 j', lunes: '2', desc: 'Planète rouge, témoin d’anciens paysages fluviaux.' },
+  'Jupiter': { distance: '778,5 M km', diametre: '139 820 km', jour: '9,9 h', annee: '11,86 a', lunes: '90+', desc: 'Géante gazeuse aux bandes nuageuses et à la Grande Tache rouge.' },
+  'Saturne': { distance: '1,43 Md km', diametre: '116 460 km', jour: '10,7 h', annee: '29,5 a', lunes: '146', desc: 'Connue pour ses anneaux spectaculaires.' },
+  'Uranus': { distance: '2,87 Md km', diametre: '50 724 km', jour: '17,2 h', annee: '84 a', lunes: '27', desc: 'Géante de glace à l’axe très incliné.' },
+  'Neptune': { distance: '4,50 Md km', diametre: '49 244 km', jour: '16,1 h', annee: '164,8 a', lunes: '14', desc: 'Vents supersoniques et profonde couleur bleue.' },
+  'Lune': { distance: '384 400 km de la Terre', diametre: '3 474 km', jour: '27,3 j', annee: '—', lunes: '—', desc: 'Satellite naturel de la Terre.' }
+};
+
+function initRenderer(){
+  try{
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+  }catch(e){
+    fallback.classList.remove('hidden');
+    fallback.classList.add('flex'); 
+    return;
+  }
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  renderer.domElement.setAttribute('aria-label','Canvas WebGL de la scène 3D');
+  renderer.domElement.setAttribute('role','img');
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 4000);
+  camera.position.set(0, 35, 90);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.04;
+  controls.minDistance = 20;
+  controls.maxDistance = 600;
+  controls.target.set(0, 0, 0);
+
+  addEnvironment();
+  buildSystem();
+
+  window.addEventListener('resize', onResize);
+  renderer.domElement.addEventListener('pointerdown', onPick);
+
+  animate();
+}
+
+function addEnvironment(){
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 4000;
+  const positions = new Float32Array(starCount * 3);
+  for(let i=0;i<starCount;i++){
+    const r = 900 + Math.random()*600;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos((Math.random()*2)-1);
+    const x = r * Math.sin(phi) * Math.cos(theta);
+    const y = r * Math.sin(phi) * Math.sin(theta);
+    const z = r * Math.cos(phi);
+    positions[i*3] = x; positions[i*3+1] = y; positions[i*3+2] = z;
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.2, sizeAttenuation: true, transparent: true, opacity: 0.9 });
+  const stars = new THREE.Points(starGeo, starMat);
+  scene.add(stars);
+
+  const ambient = new THREE.AmbientLight(0x404040, 0.6);
+  scene.add(ambient);
+}
+
+function generateNoiseTexture(w=256,h=256, color='rgba(255,255,255,0.04)'){
+  const c = document.createElement('canvas'); c.width=w; c.height=h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle='transparent'; ctx.fillRect(0,0,w,h);
+  for(let i=0;i<w*h/8;i++){
+    ctx.fillStyle = color;
+    const x = Math.random()*w, y=Math.random()*h;
+    const s = Math.random()*2+0.5;
+    ctx.fillRect(x,y,s,s);
+  }
+  return new THREE.CanvasTexture(c);
+}
+
+function gradientTexture(colors, w=1024, h=512, bandNoise=0.25, stripe=false){
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  let y=0;
+  while(y<h){
+    const slice = Math.max(2, Math.floor((Math.random()*h)/30));
+    const t = y/h;
+    const idx = Math.floor(t * (colors.length-1));
+    const c1 = colors[idx];
+    const c2 = colors[Math.min(idx+1, colors.length-1)];
+    const mix = t - idx/(colors.length-1);
+    function lerpColor(a,b,m){
+      const pa = a.replace('#','');
+      const pb = b.replace('#','');
+      const ar = parseInt(pa.substring(0,2),16), ag = parseInt(pa.substring(2,4),16), ab = parseInt(pa.substring(4,6),16);
+      const br = parseInt(pb.substring(0,2),16), bg = parseInt(pb.substring(2,4),16), bb = parseInt(pb.substring(4,6),16);
+      const rr = Math.round(ar + (br - ar)*m);
+      const rg = Math.round(ag + (bg - ag)*m);
+      const rb = Math.round(ab + (bb - ab)*m);
+      return `rgb(${rr},${rg},${rb})`;
+    }
+    let col = lerpColor(c1, c2, mix);
+    ctx.fillStyle = col;
+    ctx.fillRect(0, y, w, slice);
+
+    if(stripe && Math.random()>.5){
+      ctx.fillStyle = 'rgba(255,255,255,'+(0.05+Math.random()*0.05)+')';
+      ctx.fillRect(0, y, w, 1);
+    }
+    y += slice;
+  }
+  ctx.globalCompositeOperation = 'overlay';
+  for(let i=0;i<120;i++){
+    ctx.fillStyle = 'rgba(255,255,255,'+(Math.random()*0.02)+')';
+    const yy = Math.random()*h;
+    ctx.fillRect(0, yy, w, 2);
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  return new THREE.CanvasTexture(c);
+}
+
+function planetTexture(name){
+  switch(name){
+    case 'Mercure':
+      return gradientTexture(['#b7b1a6','#8b8680','#cfc9bf','#6e6a66'], 1024, 512, .2, false);
+    case 'Vénus':
+      return gradientTexture(['#e3c999','#cba871','#e9d3a3','#b9905e'], 1024, 512, .35, true);
+    case 'Terre':
+      return earthTexture();
+    case 'Mars':
+      return gradientTexture(['#b5532c','#cf6e3c','#7a3a2a','#d7a88a'], 1024, 512, .3, true);
+    case 'Jupiter':
+      return jupiterTexture();
+    case 'Saturne':
+      return gradientTexture(['#e6d4a7','#c9b88b','#a6906f','#f1e6c8'], 1024, 512, .35, true);
+    case 'Uranus':
+      return gradientTexture(['#a6e7ef','#86d8e2','#6fc2cb','#b9f3f8'], 1024, 512, .2, false);
+    case 'Neptune':
+      return gradientTexture(['#2748b1','#4169e1','#7aa0ff','#233c89'], 1024, 512, .25, false);
+    case 'Lune':
+      return moonTexture();
+    default:
+      return gradientTexture(['#999','#aaa','#bbb'], 1024, 512, .2, false);
+  }
+}
+
+function earthTexture(){
+  const w=1024,h=512;
+  const c = document.createElement('canvas'); c.width=w; c.height=h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#2756a3'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = '#1b8f6b';
+  for(let i=0;i<80;i++){
+    const x = Math.random()*w, y=Math.random()*h;
+    ctx.beginPath();
+    ctx.ellipse(x,y, 8+Math.random()*50, 8+Math.random()*25, Math.random()*Math.PI, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = .08; ctx.fillStyle='#ffffff';
+  for(let i=0;i<1000;i++){
+    const x = Math.random()*w, y=Math.random()*h, r=Math.random()*2;
+    ctx.beginPath(); ctx.arc(x,y,r,0,6.283); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  return new THREE.CanvasTexture(c);
+}
+
+function jupiterTexture(){
+  const w=2048,h=1024;
+  const c = document.createElement('canvas'); c.width=w; c.height=h;
+  const ctx = c.getContext('2d');
+  const bands = ['#d9b38c','#cfa47a','#a8836b','#8b5e3c','#fff1d6','#ba8c64','#d0b79a'];
+  let y=0;
+  while(y<h){
+    const height = 10 + Math.random()*38;
+    ctx.fillStyle = bands[Math.floor(Math.random()*bands.length)];
+    ctx.fillRect(0, y, w, height);
+    y += height;
+  }
+  ctx.fillStyle='rgba(255,255,255,.08)';
+  for(let i=0;i<300;i++){
+    const yy = Math.random()*h;
+    ctx.fillRect(0, yy, w, 1);
+  }
+  ctx.fillStyle='rgba(200,70,40,.8)';
+  ctx.beginPath();
+  const spotR = 60;
+  ctx.ellipse(w*0.7, h*0.55, spotR*1.4, spotR, 0, 0, Math.PI*2);
+  ctx.fill();
+  return new THREE.CanvasTexture(c);
+}
+
+function moonTexture(){
+  const w=1024,h=512;
+  const c = document.createElement('canvas'); c.width=w; c.height=h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle='#bfbfbf'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#9f9f9f';
+  for(let i=0;i<180;i++){
+    ctx.globalAlpha = .5 + Math.random()*.3;
+    const x = Math.random()*w, y=Math.random()*h;
+    const r = Math.random()*18;
+    ctx.beginPath(); ctx.arc(x,y,r,0,6.283); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  return new THREE.CanvasTexture(c);
+}
+
+function ringTexture(size=1024){
+  const c = document.createElement('canvas'); c.width=size; c.height=size;
+  const ctx = c.getContext('2d');
+  const center = size/2;
+  const grad = ctx.createRadialGradient(center,center, center*0.3, center,center, center);
+  grad.addColorStop(0, 'rgba(255,255,255,0)');
+  grad.addColorStop(0.45, 'rgba(255,255,255,0.12)');
+  grad.addColorStop(0.55, 'rgba(255,255,255,0.06)');
+  grad.addColorStop(0.7, 'rgba(255,255,255,0.0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,size,size);
+  return new THREE.CanvasTexture(c);
+}
+
+function buildSystem(){
+  const sunGroup = new THREE.Group();
+  scene.add(sunGroup);
+
+  const sunGeo = new THREE.SphereGeometry(6, 64, 64);
+  const sunCanvas = document.createElement('canvas'); sunCanvas.width = 1024; sunCanvas.height=1024;
+  const sctx = sunCanvas.getContext('2d');
+  const grad = sctx.createRadialGradient(512,512,100,512,512,512);
+  grad.addColorStop(0,'#fff6a9');
+  grad.addColorStop(0.4,'#ffd166');
+  grad.addColorStop(0.7,'#ff8c42');
+  grad.addColorStop(1,'#d9480f');
+  sctx.fillStyle=grad; sctx.fillRect(0,0,1024,1024);
+  const sunTex = new THREE.CanvasTexture(sunCanvas);
+  const sunMat = new THREE.MeshBasicMaterial({ map: sunTex });
+  const sun = new THREE.Mesh(sunGeo, sunMat);
+  sun.name = 'Soleil';
+  sunGroup.add(sun);
+
+  const glowCanvas = document.createElement('canvas'); glowCanvas.width=256; glowCanvas.height=256;
+  const gctx = glowCanvas.getContext('2d');
+  const g = gctx.createRadialGradient(128,128,30,128,128,128);
+  g.addColorStop(0,'rgba(255,230,150,0.8)'); g.addColorStop(1,'rgba(255,230,150,0)');
+  gctx.fillStyle=g; gctx.fillRect(0,0,256,256);
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(glowCanvas), color: 0xffffff, blending: THREE.AdditiveBlending, transparent: true }));
+  glow.scale.set(40,40,1);
+  sunGroup.add(glow);
+
+  const light = new THREE.PointLight(0xffddaa, 4.0, 0, 2.0);
+  light.position.set(0,0,0);
+  sunGroup.add(light);
+
+  const planets = [
+    { name:'Mercure', radius:0.7, dist: 12, rot:0.02, orb:0.015, tilt:0.01 },
+    { name:'Vénus', radius:1.1, dist: 16, rot:-0.002, orb:0.012, tilt:177*Math.PI/180 },
+    { name:'Terre', radius:1.2, dist: 20, rot:0.05, orb:0.010, tilt:23.5*Math.PI/180, moon:true },
+    { name:'Mars', radius:0.8, dist: 24, rot:0.05, orb:0.008, tilt:25*Math.PI/180 },
+    { name:'Jupiter', radius:3.6, dist: 34, rot:0.2, orb:0.006, tilt:3*Math.PI/180, bands:true },
+    { name:'Saturne', radius:3.2, dist: 48, rot:0.18, orb:0.0048, tilt:26*Math.PI/180, rings:true },
+    { name:'Uranus', radius:2.0, dist: 62, rot:0.12, orb:0.0035, tilt:98*Math.PI/180 },
+    { name:'Neptune', radius:1.9, dist: 74, rot:0.12, orb:0.003, tilt:28*Math.PI/180 }
+  ];
+
+  for(const P of planets){
+    const pivot = new THREE.Object3D(); scene.add(pivot);
+
+    const orbitGeo = new THREE.RingGeometry(P.dist-0.015, P.dist+0.015, 256);
+    const orbitMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.10, side: THREE.DoubleSide });
+    const orbit = new THREE.Mesh(orbitGeo, orbitMat);
+    orbit.rotation.x = Math.PI/2;
+    scene.add(orbit);
+
+    const mat = new THREE.MeshStandardMaterial({ map: planetTexture(P.name), roughness: 1, metalness: 0 });
+    const geo = new THREE.SphereGeometry(P.radius, 64, 64);
+    const planet = new THREE.Mesh(geo, mat);
+    planet.name = P.name;
+    planet.userData = { pivot, orbSpeed: P.orb, rotSpeed: P.rot, dist: P.dist };
+    planet.rotation.z = P.tilt || 0;
+    planet.position.set(P.dist, 0, 0);
+    planet.castShadow = false; planet.receiveShadow = false;
+    pivot.add(planet);
+
+    const fogGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: generateNoiseTexture(64,64,'rgba(255,255,255,0.04)'), color: 0xffffff, blending: THREE.AdditiveBlending, transparent: true }));
+    fogGlow.scale.set(P.radius*6, P.radius*6, 1);
+    planet.add(fogGlow);
+
+    if(P.name==='Terre' && P.moon){
+      const moonPivot = new THREE.Object3D(); moonPivot.position.copy(planet.position); scene.add(moonPivot);
+      const moonMat = new THREE.MeshStandardMaterial({ map: planetTexture('Lune'), roughness: 1, metalness: 0.1 });
+      const moon = new THREE.Mesh(new THREE.SphereGeometry(0.32, 48, 48), moonMat);
+      moon.position.set(P.dist + 2.2, 0, 0);
+      moon.name = 'Lune';
+      moon.userData = { moon: true, parentDist: P.dist, orbSpeed: 0.04, pivot: moonPivot };
+      moonPivot.add(moon);
+      planetRefs.set('Lune', moon);
+      pickables.push(moon);
+    }
+
+    if(P.rings){
+      const inner = P.radius*1.4;
+      const outer = P.radius*2.4;
+      const rTex = ringTexture(1024);
+      const ringGeo = new THREE.RingGeometry(inner, outer, 128);
+      const ringMat = new THREE.MeshBasicMaterial({ map: rTex, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI/2.2;
+      planet.add(ring);
+    }
+
+    planetRefs.set(P.name, planet);
+    pickables.push(planet);
+  }
+}
+
+function animate(){
+  animationId = requestAnimationFrame(animate);
+  if(!paused){
+    const t = performance.now() * 0.001 * (timeScale);
+    for(const [name, mesh] of planetRefs){
+      if(mesh.userData && mesh.userData.pivot && mesh.userData.orbSpeed){
+        mesh.userData.pivot.rotation.y = t * mesh.userData.orbSpeed;
+        mesh.rotation.y += mesh.userData.rotSpeed;
+      }else if(mesh.userData && mesh.userData.moon){
+        const pivot = mesh.userData.pivot;
+        pivot.rotation.y = t * mesh.userData.orbSpeed;
+        mesh.rotation.y += 0.03;
+      }
+    }
+  }
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+function onResize(){
+  if(!renderer) return;
+  const w = container.clientWidth, h = container.clientHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+function onPick(e){
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(pickables, false);
+  if(intersects.length){
+    const obj = intersects[0].object;
+    focusOn(obj.name, true);
+  }
+}
+
+function focusOn(name, smooth=true){
+  if(!planetRefs.has(name)) return;
+  currentTargetName = name;
+  const mesh = planetRefs.get(name);
+  const pos = new THREE.Vector3(); mesh.getWorldPosition(pos);
+  const radius = mesh.geometry.parameters.radius || 2;
+  const dir = new THREE.Vector3(1, .6, 1).normalize();
+  const dist = Math.max(6, radius*6);
+  const targetCamPos = pos.clone().add(dir.multiplyScalar(dist));
+
+  const start = { x: camera.position.x, y: camera.position.y, z: camera.position.z, tx: controls.target.x, ty: controls.target.y, tz: controls.target.z };
+  const end = { x: targetCamPos.x, y: targetCamPos.y, z: targetCamPos.z, tx: pos.x, ty: pos.y, tz: pos.z };
+  const duration = smooth ? 900 : 0;
+
+  tween(duration, (p)=>{
+    const k = easeInOutCubic(p);
+    camera.position.set(
+      lerp(start.x, end.x, k),
+      lerp(start.y, end.y, k),
+      lerp(start.z, end.z, k)
+    );
+    controls.target.set(
+      lerp(start.tx, end.tx, k),
+      lerp(start.ty, end.ty, k),
+      lerp(start.tz, end.tz, k)
+    );
+    controls.update();
+  });
+
+  updatePanel(name);
+}
+
+function lerp(a,b,t){ return a + (b - a)*t; }
+function easeInOutCubic(t){ return t<.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+function tween(duration=600, onUpdate=()=>{}, onComplete=()=>{}){
+  const start = performance.now();
+  function step(now){
+    const p = duration===0 ? 1 : Math.min(1, (now - start)/duration);
+    onUpdate(p);
+    if(p<1) requestAnimationFrame(step);
+    else onComplete();
+  }
+  requestAnimationFrame(step);
+}
+
+function updatePanel(name){
+  const data = infoDB[name] || {};
+  document.getElementById('panelName').textContent = name;
+  document.getElementById('panelDesc').textContent = data.desc || '';
+  document.getElementById('factDistance').textContent = data.distance || '—';
+  document.getElementById('factDiametre').textContent = data.diametre || '—';
+  document.getElementById('factJour').textContent = data.jour || '—';
+  document.getElementById('factAnnee').textContent = data.annee || '—';
+  document.getElementById('factLunes').textContent = data.lunes || '—';
+}
+
+function resetCamera(){
+  focusOn('Soleil', true);
+  const start = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+  const end = { x: 0, y: 35, z: 90 };
+  tween(900, (p)=>{
+    const k = easeInOutCubic(p);
+    camera.position.set(lerp(start.x,end.x,k), lerp(start.y,end.y,k), lerp(start.z,end.z,k));
+    controls.target.set(0,0,0); controls.update();
+  });
+}
+
+initRenderer();
+
+window.solarFocus = (name)=> focusOn(name, true);
+window.solarPause = ()=> { paused = !paused; updatePauseUI(); };
+window.solarSpeed = (val)=> { timeScale = val/100; };
+window.solarReset = resetCamera;
+window.addEventListener('keydown', (e)=>{
+  if(e.code==='Space'){ e.preventDefault(); window.solarPause(); }
+  if(e.key==='r' || e.key==='R'){ resetCamera(); }
+  if(e.key==='s' || e.key==='S'){ capture(); }
+});
+
+const btnPause = document.getElementById('btnPause');
+const btnReset = document.getElementById('btnReset');
+const btnShot = document.getElementById('btnShot');
+const btnFocusSelected = document.getElementById('btnFocusSelected');
+const btnCenterSun = document.getElementById('btnCenterSun');
+const range = document.getElementById('speedRange');
+const focusSelect = document.getElementById('focusSelect');
+
+btnPause.addEventListener('click', ()=> window.solarPause());
+btnReset.addEventListener('click', ()=> resetCamera());
+btnShot.addEventListener('click', capture);
+range.addEventListener('input', e => window.solarSpeed(e.target.value));
+btnFocusSelected.addEventListener('click', ()=> { if(currentTargetName) focusOn(currentTargetName, true); });
+btnCenterSun.addEventListener('click', ()=> { currentTargetName = 'Soleil'; updatePanel('Soleil'); resetCamera(); });
+focusSelect.addEventListener('change', e => { if(e.target.value) focusOn(e.target.value, true); });
+
+function updatePauseUI(){
+  const label = btnPause.querySelector('span');
+  if(paused){ label.textContent = 'Lecture'; btnPause.firstElementChild.className = 'fa fa-play mr-2'; }
+  else { label.textContent = 'Pause'; btnPause.firstElementChild.className = 'fa fa-pause mr-2'; }
+}
+
+function capture(){
+  try{
+    const data = renderer.domElement.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = data; a.download = 'cosmosium-capture.png';
+    a.click();
+  }catch(e){}
+}
+
+updatePanel('Soleil');
+resetCamera();
+
+</script>
+
+<script>
+  const openMenu = document.getElementById('openMenu');
+  const mobileMenu = document.getElementById('mobileMenu');
+  openMenu?.addEventListener('click', ()=> mobileMenu.classList.toggle('hidden'));
+
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle?.addEventListener('click', ()=>{
+    document.body.classList.toggle('dark');
+  });
+
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('is-visible'); io.unobserve(e.target); }});
+  }, { threshold:.15 });
+  reveals.forEach(el=> io.observe(el));
+
+  const toTop = document.getElementById('toTop');
+  toTop?.addEventListener('click', ()=> window.scrollTo({ top:0, behavior:'smooth' }));
+
+  const sp = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', ()=>{
+    const sc = document.documentElement.scrollTop;
+    const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const p = (sc/h)*100;
+    sp.style.width = p + '%';
+    if(sc>400){ toTop?.classList.remove('hidden'); } else { toTop?.classList.add('hidden'); }
+  });
+
+  const scaleRange = document.getElementById('scaleRange');
+  const scaleValue = document.getElementById('scaleValue');
+  const sizeDots = document.querySelectorAll('#sizeArena .size-dot > div');
+  function updateScale(){
+    const v = parseInt(scaleRange.value,10);
+    scaleValue.textContent = v + '%';
+    sizeDots.forEach(dot=>{
+      const parent = dot.parentElement;
+      const rel = parseFloat(parent.getAttribute('data-size') || '1');
+      const base = 24 * rel;
+      dot.style.width = (base * v/100) + 'px';
+      dot.style.height = (base * v/100) + 'px';
+    });
+  }
+  scaleRange?.addEventListener('input', updateScale);
+  updateScale();
+
+  const btnQuiz = document.getElementById('btnQuiz');
+  const btnQuizReset = document.getElementById('btnQuizReset');
+  const quizResult = document.getElementById('quizResult');
+  btnQuiz?.addEventListener('click', ()=>{
+    let score = 0;
+    score += document.querySelector('input[name="q1"]:checked')?.value === 'Saturne' ? 1 : 0;
+    score += document.querySelector('input[name="q2"]:checked')?.value === 'Terre' ? 1 : 0;
+    score += document.querySelector('input[name="q3"]:checked')?.value === 'Jupiter' ? 1 : 0;
+    score += document.querySelector('input[name="q4"]:checked')?.value === 'Fer oxydé' ? 1 : 0;
+    score += document.querySelector('input[name="q5"]:checked')?.value === 'Terre' ? 1 : 0;
+    const msg = ['Continuez, vous y êtes presque !','Bien joué !','Excellent !','Parfait !'];
+    let text = '';
+    if(score<=2) text = msg[0];
+    else if(score===3) text = msg[1];
+    else if(score===4) text = msg[2];
+    else text = msg[3];
+    quizResult.textContent = `Score : ${score}/5 — ${text}`;
+  });
+  btnQuizReset?.addEventListener('click', ()=>{
+    document.querySelectorAll('#quizBox input[type="radio"]').forEach(i => i.checked = false);
+    quizResult.textContent = '';
+  });
+
+  document.querySelectorAll('.tilt').forEach(el=>{
+    let rect;
+    function set(e){
+      rect = el.getBoundingClientRect();
+      const x = (e.clientX - rect.left)/rect.width;
+      const y = (e.clientY - rect.top)/rect.height;
+      const rx = (y - 0.5) * 10;
+      const ry = (0.5 - x) * 10;
+      el.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(5px)`;
+    }
+    function reset(){ el.style.transform = ''; }
+    el.addEventListener('mousemove', set);
+    el.addEventListener('mouseleave', reset);
+  });
+
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      const id = a.getAttribute('href').substring(1);
+      const el = document.getElementById(id);
+      if(el){
+        e.preventDefault();
+        el.scrollIntoView({ behavior:'smooth', block:'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
