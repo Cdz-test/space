@@ -280,7 +280,7 @@
 
     <div class="mt-8 grid lg:grid-cols-[1fr,360px] gap-6">
       <div class="glass rounded-3xl p-3 md:p-4 shadow-neon relative">
-        <div id="threeContainer" class="relative h-[460px] md:h-[560px] rounded-2xl bg-gradient-to-b from-aurora.a to-aurora.c overflow-hidden" role="application" aria-label="Visualisation 3D du système solaire">
+        <div id="threeContainer" class="relative h-[420px] sm:h-[460px] md:h-[560px] rounded-2xl bg-gradient-to-b from-aurora.a to-aurora.c overflow-hidden" role="application" aria-label="Visualisation 3D du système solaire">
           <div id="webglFallback" class="absolute inset-0 hidden items-center justify-center text-center p-6">
             <div>
               <i class="fa fa-triangle-exclamation text-2xl text-amber-400"></i>
@@ -288,18 +288,32 @@
             </div>
           </div>
         </div>
-        <div class="absolute left-4 top-4 flex gap-2">
-          <button id="btnPause" class="btn badge-gradient px-3 py-2 rounded-lg text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-brand/60"><i class="fa fa-pause mr-2"></i><span>Pause</span></button>
-          <button id="btnReset" class="btn badge-gradient px-3 py-2 rounded-lg text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-brand/60"><i class="fa fa-rotate mr-2"></i>Réinitialiser</button>
-          <button id="btnShot" class="btn badge-gradient px-3 py-2 rounded-lg text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-brand/60"><i class="fa fa-camera mr-2"></i>Capture</button>
+        <div class="absolute left-3 sm:left-4 top-3 sm:top-4 flex gap-2">
+          <button id="btnPause" class="btn badge-gradient px-2 sm:px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand/60">
+            <i class="fa fa-pause"></i>
+            <span class="sr-only sm:not-sr-only sm:ml-2">Pause</span>
+          </button>
+          <button id="btnReset" class="btn badge-gradient px-2 sm:px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand/60">
+            <i class="fa fa-rotate"></i>
+            <span class="sr-only sm:not-sr-only sm:ml-2">Réinitialiser</span>
+          </button>
+          <button id="btnShot" class="btn badge-gradient px-2 sm:px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand/60">
+            <i class="fa fa-camera"></i>
+            <span class="sr-only sm:not-sr-only sm:ml-2">Capture</span>
+          </button>
         </div>
-        <div class="absolute right-4 top-4 glass px-3 py-2 rounded-xl text-xs flex items-center gap-2"><i class="fa fa-mouse"></i> Glisser = orbiter • Molette = zoom</div>
-        <div class="absolute left-4 bottom-4 glass px-3 py-2 rounded-xl text-xs flex items-center gap-2">
+        <div class="absolute right-3 sm:right-4 top-3 sm:top-4 glass px-2.5 sm:px-3 py-2 rounded-xl text-xs flex items-center gap-2">
+          <i class="fa fa-mouse"></i>
+          <span class="hidden xs:inline">Glisser = orbiter • Molette = zoom</span>
+          <span class="inline xs:hidden">Glisser/Zoom</span>
+        </div>
+        <div class="absolute left-3 sm:left-4 bottom-3 sm:bottom-4 glass px-3 py-2 rounded-xl text-xs flex items-center gap-2">
           <i class="fa fa-gauge"></i>
-          Vitesse
-          <input id="speedRange" type="range" min="0" max="200" value="100" class="ml-2 w-36 accent-fuchsia-400">
+          <span class="hidden xs:inline">Vitesse</span>
+          <span class="inline xs:hidden">Vit.</span>
+          <input id="speedRange" type="range" min="0" max="200" value="100" class="ml-2 w-28 xs:w-32 sm:w-36 accent-fuchsia-400">
         </div>
-        <div class="absolute right-4 bottom-4 glass px-3 py-2 rounded-xl text-xs flex items-center gap-2">
+        <div class="absolute right-3 sm:right-4 bottom-3 sm:bottom-4 glass px-3 py-2 rounded-xl text-xs flex items-center gap-2">
           <label for="focusSelect" class="sr-only">Choisir une planète</label>
           <i class="fa fa-bullseye"></i>
           <select id="focusSelect" class="bg-transparent outline-none">
